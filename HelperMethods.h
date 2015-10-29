@@ -53,7 +53,7 @@ vector<gridBox> parseInput()
     string line, firstLine;
 //    filename = "data/testgrid_1";
 
-    std::ifstream inputFile("data/testgrid_1");
+    std::ifstream inputFile("data/testgrid_2");
 //    std::ifstream inputFile("/home/paranjay/ClionProjects/SerialAMR/data/testgrid_1");
 
     int boxCount, gridRowCount, gridColumnCount;
@@ -134,6 +134,7 @@ vector<gridBox> parseInput()
 
 gridBox getBoxById(int id, vector<gridBox>& gridBoxes)
 {
+//    cout << "id called with " << id << endl;
     for(int j=0; j < gridBoxes.size(); j++)
     {
         if(gridBoxes[j].boxId == id)
@@ -141,7 +142,9 @@ gridBox getBoxById(int id, vector<gridBox>& gridBoxes)
             return gridBoxes[j];
         }
     }
-    throw std::invalid_argument( "Nothing matched" );
+    ostringstream ss;
+    ss << id;
+    throw std::invalid_argument( ss.str());
 }
 
 int findDistanceOnYAxis(gridBox box1, gridBox box2)
@@ -211,6 +214,8 @@ void printGridBoxes(vector<gridBox>& gridBoxes)
     for(int i=0;i <gridBoxes.size(); i++)
     {
         cout << gridBoxes[i].boxId << endl;
+        cout << gridBoxes[i].temperature << endl;
+        cout << gridBoxes[i].temperature << endl;
     }
 }
 
