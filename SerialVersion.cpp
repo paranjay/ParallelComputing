@@ -8,8 +8,7 @@
 #include <time.h>
 #include "HelperMethods.h"
 
-#define EPSILON 0.00000000001
-#define DELTA 0.005
+
 
 using namespace std;
 

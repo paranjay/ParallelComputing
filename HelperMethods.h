@@ -18,6 +18,9 @@ using namespace std;
 
 #endif //PARALLELCOMPUTING_HELPERMETHODS_H
 
+#define EPSILON 0.00000000001
+#define DELTA 0.005
+
 struct gridBox
 {
     double temperature;
