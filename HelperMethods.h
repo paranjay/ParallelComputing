@@ -53,7 +53,7 @@ vector<gridBox> parseInput()
     string line, firstLine;
 //    filename = "data/testgrid_1";
 
-    std::ifstream inputFile("data/testgrid_2");
+    std::ifstream inputFile("data/testgrid_1");
 //    std::ifstream inputFile("/home/paranjay/ClionProjects/SerialAMR/data/testgrid_1");
 
     int boxCount, gridRowCount, gridColumnCount;

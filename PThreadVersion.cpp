@@ -7,8 +7,9 @@
 #include <ctime>
 #include "HelperMethods.h"
 #include <pthread.h>
+#include <stdlib.h>
 #define DELTA 0.005
-#define THREAD_COUNT 2
+#define THREAD_COUNT 16
 
 void *updateTemperatureOfBox(void * parameterPack);
 
@@ -29,6 +30,8 @@ int runSimulation()
     int size = gridBoxes.size();
     int boundary = size / THREAD_COUNT;
     cout << boundary<< endl;
+    void* status;
+    int rc;
     while(loop)
     {
         iterationCount++;
@@ -37,31 +40,40 @@ int runSimulation()
         pthread_attr_t attr;
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+        ParamterPack packArr[THREAD_COUNT];
 
+        for(int j=0; j<THREAD_COUNT; j++)
+        {
+            packArr[j].start = j * boundary;
+            packArr[j].end = packArr[j].start + boundary;
+
+        }
         if(THREAD_COUNT < size)
         {
             for(int j=0; j<THREAD_COUNT; j++)
             {
-                ParamterPack pack = ParamterPack();
-                int start = j * boundary;
-                int end = start + boundary;
-                pack.start = start;
-                pack.end = end;
-
-//                updateTemperatureOfBox((void *) &pack);
-                pthread_create(&threads[j], &attr, updateTemperatureOfBox, (void *)&pack);
+//                updateTemperatureOfBox((void *) &packArr[j]);
+//                ParamterPack pack = ParamterPack();
+//                pack.start = j * boundary;
+//                pack.end = pack.start 
+                pthread_create(&threads[j], &attr, updateTemperatureOfBox, (void *)&packArr[j]);
             }
+
 //            pthread_attr_destroy(&attr);
             for(int j=0; j<THREAD_COUNT; j++)
             {
-                void* status = 0;
-                pthread_join(threads[j], NULL);
+                rc = pthread_join(threads[j], &status);
+                if (rc) {
+                    printf("ERROR; return code from pthread_join() is %d\n", rc);
+                    exit(-1);
+                }
+//                pthread_join(threads[j], &status);
             }
         }
 
 
         double max_temp = gridBoxes[0].newTemperature;
-        double min_temp = gridBoxes[0].newTemperature;
+        double min_temp = 2000.0;
         for(int i = 0; i<gridBoxes.size(); i++)
         {
             gridBoxes[i].temperature = gridBoxes[i].newTemperature;
@@ -72,6 +84,7 @@ int runSimulation()
         }
 
         double conv = (max_temp - min_temp) / max_temp;
+//        cout << min_temp << " " << max_temp << endl;
         if(conv < EPSILON)
         {
             printf("Max Temp : %f \nMin Temp : %f \n", max_temp, min_temp);
@@ -86,7 +99,7 @@ void *updateTemperatureOfBox(void* parameterPack) {
     ParamterPack *pack = static_cast<ParamterPack*>(parameterPack);
     int start = pack->start;
     int end = pack->end;
-    if(start == 0)
+//    if(start == 0)
 //        cout << "start : " << start << " end : "<< end << endl;
 
     for(int i = start; i<end; i++)
