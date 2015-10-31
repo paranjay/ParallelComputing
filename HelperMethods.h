@@ -9,8 +9,8 @@
 #include <sstream>
 #include <math.h>
 #include <stdexcept>
-#include <ctime>
-
+#include <sys/time.h>
+//#include <ctime>
 using namespace std;
 
 #ifndef PARALLELCOMPUTING_HELPERMETHODS_H
@@ -219,11 +219,15 @@ void printGridBoxes(vector<gridBox>& gridBoxes)
     }
 }
 
-double diffTime(clock_t t1, clock_t t2)
+double diffTime(struct timeval start, struct timeval end)
 {
-    double elapsed;
-    elapsed = ((double)t2 - t1) / CLOCKS_PER_SEC;
-    return elapsed;
+    long long time =   (end.tv_sec * (unsigned int)1e6 + end.tv_usec) -
+                       (start.tv_sec * (unsigned int)1e6 + start.tv_usec);
+
+    return time/1e6;
+//    double elapsed;
+//    elapsed = ((double)t2 - (double)t1) / CLOCKS_PER_SEC;
+//    return elapsed;
 }
 
 bool hasSimulationConverged(vector<gridBox>& gridBoxes)

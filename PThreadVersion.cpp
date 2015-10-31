@@ -6,10 +6,8 @@
 #include <vector>
 #include <ctime>
 #include "HelperMethods.h"
-#include <pthread.h>
 #include <stdlib.h>
 #define DELTA 0.005
-#define THREAD_COUNT 16
 
 void *updateTemperatureOfBox(void * parameterPack);
 
@@ -27,40 +25,48 @@ int runSimulation()
 {
     bool loop = true;
     int iterationCount = 0;
-    int size = gridBoxes.size();
-    int boundary = size / THREAD_COUNT;
-    cout << boundary<< endl;
+    int boxCount = gridBoxes.size();
+    int threadCount;
+
+    do
+    {
+        cout << "Enter the number of threads: ";
+        cin >> threadCount;
+
+        if(boxCount % threadCount != 0)
+        {
+            cout << "The thread count should divide the number of boxes evenly, please choose again (box size is "
+                            << boxCount << "): ";
+            cin >> threadCount;
+        }
+
+    }while(boxCount % threadCount != 0);
+
+    int boundary = boxCount / threadCount;
     void* status;
     int rc;
     while(loop)
     {
         iterationCount++;
         // cout << "iteration number " << iterationCount<<endl;
-        pthread_t threads[THREAD_COUNT];
+        pthread_t threads[threadCount];
         pthread_attr_t attr;
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-        ParamterPack packArr[THREAD_COUNT];
 
-        for(int j=0; j<THREAD_COUNT; j++)
+        if(threadCount < boxCount)
         {
-            packArr[j].start = j * boundary;
-            packArr[j].end = packArr[j].start + boundary;
-
-        }
-        if(THREAD_COUNT < size)
-        {
-            for(int j=0; j<THREAD_COUNT; j++)
+            for(int j=0; j<threadCount; j++)
             {
-//                updateTemperatureOfBox((void *) &packArr[j]);
-//                ParamterPack pack = ParamterPack();
-//                pack.start = j * boundary;
-//                pack.end = pack.start 
-                pthread_create(&threads[j], &attr, updateTemperatureOfBox, (void *)&packArr[j]);
+//                updateTemperatureOfBox((void *) pack);
+                ParamterPack* pack = (ParamterPack*)malloc(sizeof(ParamterPack));
+                (*pack).start = j * boundary;
+                (*pack).end = (*pack).start + boundary;
+                pthread_create(&threads[j], &attr, updateTemperatureOfBox, (void *)pack);
             }
 
 //            pthread_attr_destroy(&attr);
-            for(int j=0; j<THREAD_COUNT; j++)
+            for(int j=0; j<threadCount; j++)
             {
                 rc = pthread_join(threads[j], &status);
                 if (rc) {
@@ -95,7 +101,8 @@ int runSimulation()
     return iterationCount;
 }
 
-void *updateTemperatureOfBox(void* parameterPack) {
+void *updateTemperatureOfBox(void* parameterPack)
+{
     ParamterPack *pack = static_cast<ParamterPack*>(parameterPack);
     int start = pack->start;
     int end = pack->end;
@@ -172,14 +179,16 @@ int main(int argc, char const *argv[])
 {
     gridBoxes = parseInput();
 
-//    printGridBoxes(gridBoxes);
-    clock_t t1 = clock();
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
 
     int iterationCount = runSimulation();
-    clock_t t2 = clock();
+
+    gettimeofday(&end, NULL);
+
+    double time = diffTime(start, end);
 
     printf("number of iterations : %d\n", iterationCount);
-    double change = diffTime(t1, t2);
-    printf("time taken : %f seconds.\n", change);
+    printf("time taken : %f seconds.\n", time);
     return 0;
 }
