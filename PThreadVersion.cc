@@ -7,6 +7,8 @@
 #include <ctime>
 #include "HelperMethods.h"
 #include <stdlib.h>
+//#include <chrono>
+
 #define DELTA 0.005
 
 void *updateTemperatureOfBox(void * parameterPack);
@@ -21,26 +23,10 @@ struct ParamterPack
 
 vector<gridBox> gridBoxes;
 
-int runSimulation()
+int runSimulation(int boxCount, int threadCount)
 {
     bool loop = true;
     int iterationCount = 0;
-    int boxCount = gridBoxes.size();
-    int threadCount;
-
-    do
-    {
-        cout << "Enter the number of threads: ";
-        cin >> threadCount;
-
-        if(boxCount % threadCount != 0)
-        {
-            cout << "The thread count should divide the number of boxes evenly, please choose again (box size is "
-                            << boxCount << "): ";
-            cin >> threadCount;
-        }
-
-    }while(boxCount % threadCount != 0);
 
     int boundary = boxCount / threadCount;
     void* status;
@@ -179,16 +165,37 @@ int main(int argc, char const *argv[])
 {
     gridBoxes = parseInput();
 
+
+    int boxCount = gridBoxes.size();
+    int threadCount;
+
+    do
+    {
+        cout << "Enter the number of threads: ";
+        cin >> threadCount;
+
+        if(boxCount % threadCount != 0)
+        {
+            cout << "The thread count should divide the number of boxes evenly, please choose again (box size is "
+            << boxCount << "): ";
+            cin >> threadCount;
+        }
+    }while(boxCount % threadCount != 0);
+
     struct timeval start, end;
     gettimeofday(&start, NULL);
+    clock_t start_t = clock();
 
-    int iterationCount = runSimulation();
+    int iterationCount = runSimulation(boxCount, threadCount);
 
     gettimeofday(&end, NULL);
+    clock_t end_t = clock();
 
     double time = diffTime(start, end);
+    double avgClocks = averageCPUClocks(start_t, end_t, threadCount);
 
     printf("number of iterations : %d\n", iterationCount);
-    printf("time taken : %f seconds.\n", time);
+    printf("time taken by wall clock : %f seconds.\n", time);
+    printf("average clock cycles per thread : %f .\n", avgClocks);
     return 0;
 }

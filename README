@@ -1,0 +1,30 @@
+Name : Paranjay Srivastava
+
+The below results are obtained after running the code on the host sl4 on stdlinux. We may get different results on a different host.
+
+Number of Threads : 1
+time taken by wall clock : 19.053169 seconds.
+average clock cycles per thread : 19590000.000000 .
+
+Number of Threads : 2
+time taken by wall clock : 13.584797 seconds.
+average clock cycles per thread : 10915000.000000 .
+
+Number of Threads : 4
+time taken by wall clock : 13.504484 seconds.
+average clock cycles per thread : 6962500.000000 .
+
+Number of Threads : 8
+time taken by wall clock : 34.226664 seconds.
+average clock cycles per thread : 7083750.000000 .
+
+Number of Threads : 16
+time taken by wall clock : 80.959431 seconds.
+average clock cycles per thread : 7256875.000000 .
+
+The value of the max and min temperatures and the number of iterations are the same.
+
+Max Temp : 53.571429
+Min Temp : 53.571429
+number of iterations : 61521
+

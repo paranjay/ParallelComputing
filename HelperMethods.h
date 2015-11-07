@@ -225,9 +225,13 @@ double diffTime(struct timeval start, struct timeval end)
                        (start.tv_sec * (unsigned int)1e6 + start.tv_usec);
 
     return time/1e6;
-//    double elapsed;
-//    elapsed = ((double)t2 - (double)t1) / CLOCKS_PER_SEC;
-//    return elapsed;
+}
+
+double averageCPUClocks(clock_t start, clock_t end, int numThreads)
+{
+    double elapsed;
+    elapsed = ((double)end - (double)start) / (numThreads);
+    return elapsed;
 }
 
 bool hasSimulationConverged(vector<gridBox>& gridBoxes)
